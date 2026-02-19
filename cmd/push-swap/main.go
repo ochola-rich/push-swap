@@ -4,23 +4,17 @@ import (
 	"fmt"
 	"math"
 	"os"
+	"slices"
 	"strconv"
 	"strings"
+
+	"push-swap/internal/models"
 )
 
 // --- 1. THE BRAIN (TURK ALGORITHM LOGIC) ---
 
-type MovePlan struct {
-	Shared       int
-	RemainingA   int
-	RemainingB   int
-	MoveA, MoveB string
-	SharedType   string
-	TotalCost    int
-}
-
-func GetBestPlan(stackA, stackB []int) MovePlan {
-	var bestPlan MovePlan
+func GetBestPlan(stackA, stackB []int) models.MovePlan {
+	var bestPlan models.MovePlan
 	bestPlan.TotalCost = math.MaxInt
 	lenA, lenB := len(stackA), len(stackB)
 
@@ -37,8 +31,8 @@ func GetBestPlan(stackA, stackB []int) MovePlan {
 	return bestPlan
 }
 
-func calculateStrategy(distA, distB int, isATop, isBTop bool) MovePlan {
-	p := MovePlan{}
+func calculateStrategy(distA, distB int, isATop, isBTop bool) models.MovePlan {
+	p := models.MovePlan{}
 	if isATop && isBTop {
 		p.Shared = min(distA, distB)
 		p.SharedType = "rr"
@@ -51,8 +45,16 @@ func calculateStrategy(distA, distB int, isATop, isBTop bool) MovePlan {
 		p.MoveA, p.MoveB = "rra", "rrb"
 	} else {
 		p.RemainingA, p.RemainingB = distA, distB
-		if isATop { p.MoveA = "ra" } else { p.MoveA = "rra" }
-		if isBTop { p.MoveB = "rb" } else { p.MoveB = "rrb" }
+		if isATop {
+			p.MoveA = "ra"
+		} else {
+			p.MoveA = "rra"
+		}
+		if isBTop {
+			p.MoveB = "rb"
+		} else {
+			p.MoveB = "rrb"
+		}
 	}
 	p.TotalCost = p.Shared + p.RemainingA + p.RemainingB
 	return p
@@ -103,7 +105,9 @@ func findTargetIdxA(valB int, stackA []int) int {
 // --- 2. THE OPERATIONS (THE BODY) ---
 
 func pa(a *[]int, b *[]int) {
-	if len(*b) == 0 { return }
+	if len(*b) == 0 {
+		return
+	}
 	val := (*b)[0]
 	*b = (*b)[1:]
 	*a = append([]int{val}, (*a)...)
@@ -111,7 +115,9 @@ func pa(a *[]int, b *[]int) {
 }
 
 func pb(a *[]int, b *[]int) {
-	if len(*a) == 0 { return }
+	if len(*a) == 0 {
+		return
+	}
 	val := (*a)[0]
 	*a = (*a)[1:]
 	*b = append([]int{val}, (*b)...)
@@ -119,7 +125,9 @@ func pb(a *[]int, b *[]int) {
 }
 
 func ra(s []int, label string) {
-	if len(s) < 2 { return }
+	if len(s) < 2 {
+		return
+	}
 	first := s[0]
 	copy(s, s[1:])
 	s[len(s)-1] = first
@@ -127,7 +135,9 @@ func ra(s []int, label string) {
 }
 
 func rra(s []int, label string) {
-	if len(s) < 2 { return }
+	if len(s) < 2 {
+		return
+	}
 	last := s[len(s)-1]
 	copy(s[1:], s)
 	s[0] = last
@@ -135,38 +145,66 @@ func rra(s []int, label string) {
 }
 
 func rotateSilent(s []int) {
-	if len(s) < 2 { return }
-	f := s[0]; copy(s, s[1:]); s[len(s)-1] = f
+	if len(s) < 2 {
+		return
+	}
+	f := s[0]
+	copy(s, s[1:])
+	s[len(s)-1] = f
 }
 
 func revRotateSilent(s []int) {
-	if len(s) < 2 { return }
-	l := s[len(s)-1]; copy(s[1:], s); s[0] = l
+	if len(s) < 2 {
+		return
+	}
+	l := s[len(s)-1]
+	copy(s[1:], s)
+	s[0] = l
 }
 
 // --- 3. THE EXECUTORS ---
 
-func ExecuteMove(p MovePlan, a, b *[]int) {
+func ExecuteMove(p models.MovePlan, a, b *[]int) {
 	for i := 0; i < p.Shared; i++ {
 		if p.SharedType == "rr" {
-			rotateSilent(*a); rotateSilent(*b); fmt.Println("rr")
+			rotateSilent(*a)
+			rotateSilent(*b)
+			fmt.Println("rr")
 		} else {
-			revRotateSilent(*a); revRotateSilent(*b); fmt.Println("rrr")
+			revRotateSilent(*a)
+			revRotateSilent(*b)
+			fmt.Println("rrr")
 		}
 	}
 	for i := 0; i < p.RemainingA; i++ {
-		if p.MoveA == "ra" { ra(*a, "ra") } else { rra(*a, "rra") }
+		if p.MoveA == "ra" {
+			ra(*a, "ra")
+		} else {
+			rra(*a, "rra")
+		}
 	}
 	for i := 0; i < p.RemainingB; i++ {
-		if p.MoveB == "rb" { ra(*b, "rb") } else { rra(*b, "rrb") }
+		if p.MoveB == "rb" {
+			ra(*b, "rb")
+		} else {
+			rra(*b, "rrb")
+		}
 	}
 	pb(a, b)
 }
 
 func sortThree(a []int) {
 	max := a[0]
-	for _, v := range a { if v > max { max = v } }
-	if a[0] == max { ra(a, "ra") } else if a[1] == max { rra(a, "rra") }
+	for _, v := range a {
+		if v > max {
+			max = v
+		}
+	}
+	if a[0] == max {
+		ra(a, "ra")
+	} else if a[1] == max {
+		rra(a, "rra")
+	}
 	if a[0] > a[1] {
 		a[0], a[1] = a[1], a[0]
 		fmt.Println("sa")
@@ -177,23 +215,39 @@ func finalizeA(a []int) {
 	minIdx := 0
 	minVal := a[0]
 	for i, val := range a {
-		if val < minVal { minVal = val; minIdx = i }
+		if val < minVal {
+			minVal = val
+			minIdx = i
+		}
 	}
 	dist, isTop := getDist(minIdx, len(a))
 	for i := 0; i < dist; i++ {
-		if isTop { ra(a, "ra") } else { rra(a, "rra") }
+		if isTop {
+			ra(a, "ra")
+		} else {
+			rra(a, "rra")
+		}
 	}
 }
 
 // --- 4. MAIN FLOW ---
 
 func main() {
-	if len(os.Args) < 2 { return }
-	
+	if len(os.Args) < 2 {
+		return
+	}
+
 	// Parsing Input
 	var stackA []int
 	input := os.Args[1:]
-	if len(input) == 1 { input = strings.Fields(input[0]) }
+
+	if slices.IsSorted(input) {
+		return
+	}
+
+	if len(input) == 1 {
+		input = strings.Fields(input[0])
+	}
 	for _, arg := range input {
 		n, _ := strconv.Atoi(arg)
 		stackA = append(stackA, n)
@@ -201,8 +255,12 @@ func main() {
 	stackB := []int{}
 
 	// Phase 1: Push A to B until 3 left
-	if len(stackA) > 3 { pb(&stackA, &stackB) }
-	if len(stackA) > 3 { pb(&stackA, &stackB) }
+	if len(stackA) > 3 {
+		pb(&stackA, &stackB)
+	}
+	if len(stackA) > 3 {
+		pb(&stackA, &stackB)
+	}
 	for len(stackA) > 3 {
 		plan := GetBestPlan(stackA, stackB)
 		ExecuteMove(plan, &stackA, &stackB)
@@ -216,7 +274,11 @@ func main() {
 		targetIdxA := findTargetIdxA(stackB[0], stackA)
 		dist, isTop := getDist(targetIdxA, len(stackA))
 		for i := 0; i < dist; i++ {
-			if isTop { ra(stackA, "ra") } else { rra(stackA, "rra") }
+			if isTop {
+				ra(stackA, "ra")
+			} else {
+				rra(stackA, "rra")
+			}
 		}
 		pa(&stackA, &stackB)
 	}
@@ -225,8 +287,16 @@ func main() {
 	finalizeA(stackA)
 }
 
-func min(a, b int) int { if a < b { return a }; return b }
+func min(a, b int) int {
+	if a < b {
+		return a
+	}
+	return b
+}
+
 func getDist(idx, length int) (int, bool) {
-	if idx <= length/2 { return idx, true }
+	if idx <= length/2 {
+		return idx, true
+	}
 	return length - idx, false
 }
