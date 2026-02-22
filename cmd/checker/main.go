@@ -1,8 +1,10 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
 	"os"
+	"slices"
 	"strconv"
 	"strings"
 
@@ -10,8 +12,6 @@ import (
 )
 
 func main() {
-	inst := []string{"pb", "pb", "rb", "pb", "sa", "pa", "pa", "pa"}
-
 	if len(os.Args) < 2 {
 		return
 	}
@@ -19,28 +19,60 @@ func main() {
 	// Parsing Input
 	var stackA []int
 	input := os.Args[1:]
+
 	if len(input) == 1 {
 		input = strings.Fields(input[0])
 	}
+	if slices.IsSorted(input) {
+		return
+	}
+	if len(input) != len(slices.Compact(input)) { // Ensure no duplicates
+		fmt.Println("Error")
+		return
+	}
 	for _, arg := range input {
-		n, _ := strconv.Atoi(arg)
+		n, err := strconv.Atoi(arg)
+		// Ensure only numbers
+		if err != nil {
+			fmt.Println("Error")
+			return
+		}
 		stackA = append(stackA, n)
 	}
+
 	stackB := []int{}
-	for _, ins := range inst {
-		switch ins {
+
+	// Scan operations until EOF
+	scanner := bufio.NewScanner(os.Stdin)
+	for scanner.Scan() {
+		line := scanner.Text()
+		switch line {
+		case "pa":
+			stack.Pa(&stackA, &stackB)
 		case "pb":
 			stack.Pb(&stackA, &stackB)
 		case "ra":
-			stack.Ra(stackA, "ra")
+			stack.R(stackA, "ra")
+		case "rb":
+			stack.R(stackB, "rb")
 		case "sa":
 			stackA[0], stackA[1] = stackA[1], stackA[0]
-		case "pa":
-			stack.Pa(&stackA, &stackB)
-		case "rb":
-			stack.Ra(stackB, "rb")
-
+		case "sb":
+			stackB[0], stackB[1] = stackB[1], stackB[0]
+		case "rra":
+			stack.RevRotateSilent(stackA)
+		case "rrb":
+			stack.RevRotateSilent(stackB)
+		case "rrr":
+			stack.RevRotateSilent(stackA)
+			stack.RevRotateSilent(stackB)
 		}
 	}
-	fmt.Println(stackA, stackB)
+	// Validate only after EOF(Ctrl+D)
+	if slices.IsSorted(stackA) && len(input) == len(stackA) {
+		fmt.Println("OK")
+		return
+	}
+
+	fmt.Println("KO")
 }
