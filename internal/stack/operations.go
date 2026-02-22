@@ -1,40 +1,48 @@
 // Package stack
 package stack
 
-func Pa(a *[]int, b *[]int) {
+func Pa(a *[]int, b *[]int) string {
 	if len(*b) == 0 {
-		return
+		return ""
 	}
 	val := (*b)[0]
 	*b = (*b)[1:]
 	*a = append([]int{val}, (*a)...)
+
+	return "pa"
 }
 
-func Pb(a *[]int, b *[]int) {
+func Pb(a *[]int, b *[]int) string {
 	if len(*a) == 0 {
-		return
+		return ""
 	}
 	val := (*a)[0]
 	*a = (*a)[1:]
 	*b = append([]int{val}, (*b)...)
+
+	return "pb"
 }
 
-func Ra(s []int, label string) {
+func R(s []int, label string) string {
 	if len(s) < 2 {
-		return
+		return ""
 	}
 	first := s[0]
 	copy(s, s[1:])
 	s[len(s)-1] = first
+
+	return label
 }
 
-func Rra(s []int, label string) {
+func Rr(s []int, label string) string {
 	if len(s) < 2 {
-		return
+		return ""
 	}
 	last := s[len(s)-1]
 	copy(s[1:], s)
 	s[0] = last
+
+	return label
 }
 
 func RotateSilent(s []int) {

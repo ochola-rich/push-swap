@@ -112,19 +112,19 @@ func ExecuteMove(p models.MovePlan, a, b *[]int) {
 	}
 	for i := 0; i < p.RemainingA; i++ {
 		if p.MoveA == "ra" {
-			stack.Ra(*a, "ra")
+			fmt.Println(stack.R(*a, "ra"))
 		} else {
-			stack.Rra(*a, "rra")
+			fmt.Println(stack.Rr(*a, "rra"))
 		}
 	}
 	for i := 0; i < p.RemainingB; i++ {
 		if p.MoveB == "rb" {
-			stack.Ra(*b, "rb")
+			fmt.Println(stack.R(*b, "rb"))
 		} else {
-			stack.Rra(*b, "rrb")
+			fmt.Println(stack.Rr(*b, "rrb"))
 		}
 	}
-	stack.Pb(a, b)
+	fmt.Println(stack.Pb(a, b))
 }
 
 func SortThree(a []int) {
@@ -135,9 +135,9 @@ func SortThree(a []int) {
 		}
 	}
 	if a[0] == max {
-		stack.Ra(a, "ra")
+		fmt.Println(stack.R(a, "ra"))
 	} else if a[1] == max {
-		stack.Rra(a, "rra")
+		fmt.Println(stack.Rr(a, "rra"))
 	}
 	if a[0] > a[1] {
 		a[0], a[1] = a[1], a[0]
@@ -157,9 +157,9 @@ func FinalizeA(a []int) {
 	dist, isTop := GetDist(minIdx, len(a))
 	for range dist {
 		if isTop {
-			stack.Ra(a, "ra")
+			fmt.Println(stack.R(a, "ra"))
 		} else {
-			stack.Rra(a, "rra")
+			stack.Rr(a, "rra")
 		}
 	}
 }

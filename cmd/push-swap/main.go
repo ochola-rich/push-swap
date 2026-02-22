@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"os"
 	"slices"
 	"strconv"
@@ -19,25 +20,34 @@ func main() {
 	var stackA []int
 	input := os.Args[1:]
 
-	if slices.IsSorted(input) {
-		return
-	}
-
 	if len(input) == 1 {
 		input = strings.Fields(input[0])
 	}
+	if slices.IsSorted(input) {
+		return
+	}
+	if len(input) != len(slices.Compact(input)) { // Ensure no duplicates
+		fmt.Println("Error")
+		return
+	}
 	for _, arg := range input {
-		n, _ := strconv.Atoi(arg)
+		n, err := strconv.Atoi(arg)
+		// Ensure only numbers
+		if err != nil {
+			fmt.Println("Error")
+			return
+		}
 		stackA = append(stackA, n)
 	}
+
 	stackB := []int{}
 
 	// Phase 1: Push A to B until 3 left
 	if len(stackA) > 3 {
-		stack.Pb(&stackA, &stackB)
+		fmt.Println(stack.Pb(&stackA, &stackB))
 	}
 	if len(stackA) > 3 {
-		stack.Pb(&stackA, &stackB)
+		fmt.Println(stack.Pb(&stackA, &stackB))
 	}
 	for len(stackA) > 3 {
 		plan := algo.GetBestPlan(stackA, stackB)
@@ -53,12 +63,12 @@ func main() {
 		dist, isTop := GetDist(targetIdxA, len(stackA))
 		for range dist {
 			if isTop {
-				stack.Ra(stackA, "ra")
+				fmt.Println(stack.R(stackA, "ra"))
 			} else {
-				stack.Rra(stackA, "rra")
+				fmt.Println(stack.Rr(stackA, "rra"))
 			}
 		}
-		stack.Pa(&stackA, &stackB)
+		fmt.Println(stack.Pa(&stackA, &stackB))
 	}
 
 	// Phase 4: Align A
