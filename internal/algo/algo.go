@@ -159,7 +159,7 @@ func FinalizeA(a []int) {
 		if isTop {
 			fmt.Println(stack.R(a, "ra"))
 		} else {
-			stack.Rr(a, "rra")
+			fmt.Println(stack.Rr(a, "rra"))
 		}
 	}
 }
