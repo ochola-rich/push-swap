@@ -59,6 +59,9 @@ func main() {
 			stackA[0], stackA[1] = stackA[1], stackA[0]
 		case "sb":
 			stackB[0], stackB[1] = stackB[1], stackB[0]
+		case "rr":
+			stack.RotateSilent(stackA)
+			stack.RotateSilent(stackB)
 		case "rra":
 			stack.RevRotateSilent(stackA)
 		case "rrb":
