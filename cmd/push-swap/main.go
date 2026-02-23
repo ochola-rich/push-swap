@@ -26,7 +26,8 @@ func main() {
 	if slices.IsSorted(input) {
 		return
 	}
-	if len(input) != len(slices.Compact(input)) { // Ensure no duplicates
+	fmt.Println(slices.Compact(input))
+	if hasDuplicates(stackA){ // Ensure no duplicates
 		fmt.Println("Error")
 		return
 	}
@@ -87,4 +88,15 @@ func GetDist(idx, length int) (int, bool) {
 		return idx, true
 	}
 	return length - idx, false
+}
+
+func hasDuplicates(elements []int) bool {
+    encountered := map[int]bool{}
+    for _, v := range elements {
+        if encountered[v] {
+            return true // Duplicate found!
+        }
+        encountered[v] = true
+    }
+    return false
 }
