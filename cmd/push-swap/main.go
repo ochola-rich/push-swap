@@ -23,14 +23,6 @@ func main() {
 	if len(input) == 1 {
 		input = strings.Fields(input[0])
 	}
-	if slices.IsSorted(input) {
-		return
-	}
-	fmt.Println(slices.Compact(input))
-	if hasDuplicates(stackA){ // Ensure no duplicates
-		fmt.Println("Error")
-		return
-	}
 	for _, arg := range input {
 		n, err := strconv.Atoi(arg)
 		// Ensure only numbers
@@ -40,6 +32,14 @@ func main() {
 		}
 		stackA = append(stackA, n)
 	}
+	if hasDuplicates(stackA){ // Ensure no duplicates
+		fmt.Println("Error")
+		return
+	}
+	if slices.IsSorted(input) {
+		return
+	}
+	
 
 	stackB := []int{}
 

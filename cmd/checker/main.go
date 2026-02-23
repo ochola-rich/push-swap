@@ -23,11 +23,11 @@ func main() {
 	if len(input) == 1 {
 		input = strings.Fields(input[0])
 	}
-	if slices.IsSorted(input) {
+	if hasDuplicates(stackA) { // Ensure no duplicates
+		fmt.Println("Error")
 		return
 	}
-	if len(input) != len(slices.Compact(input)) { // Ensure no duplicates
-		fmt.Println("Error")
+	if slices.IsSorted(input) {
 		return
 	}
 	for _, arg := range input {
@@ -78,4 +78,16 @@ func main() {
 	}
 
 	fmt.Println("KO")
+}
+
+
+func hasDuplicates(elements []int) bool {
+    encountered := map[int]bool{}
+    for _, v := range elements {
+        if encountered[v] {
+            return true // Duplicate found!
+        }
+        encountered[v] = true
+    }
+    return false
 }

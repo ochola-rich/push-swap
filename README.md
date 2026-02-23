@@ -1,12 +1,12 @@
 # Project push-swap
 
-Push-Swap is a very simple project that uses a Non-Comparative Sorting Algorithm.
-You have at your disposal a list of int values, two stacks (a and b) and a set of
-instructions.
+One Paragraph of project description goes here
 
 ## Getting Started
 
-Clone the repository and provide custom values to see the application in action.
+These instructions will get you a copy of the project up and running on your
+local machine for development and testing purposes. See deployment for notes on
+how to deploy the project on a live system.
 
 ## MakeFile
 
@@ -26,6 +26,18 @@ Run the application
 
 ```bash
 make run
+```
+
+Live reload the application:
+
+```bash
+make watch
+```
+
+Run the test suite:
+
+```bash
+make test
 ```
 
 Clean up binary from the last build:
